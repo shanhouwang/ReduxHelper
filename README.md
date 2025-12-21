@@ -17,12 +17,27 @@ rn-redux-demo/
 ├── index.js
 ├── package.json
 └── src/
+    ├── query/
+    │   └── queryClient.js
     ├── store/
     │   └── store.js
     └── features/
-        └── counter/
-            ├── CounterScreen.js
-            └── counterSlice.js
+        ├── counter/
+        │   ├── CounterScreen.js
+        │   └── counterSlice.js
+        ├── query/
+        │   ├── QueryDemo.js
+        │   └── fakeApi.js
+        └── hybrid/
+            ├── api.js
+            ├── hybridSlice.js
+            ├── hooks/
+            │   └── useHybridItems.js
+            ├── components/
+            │   ├── HybridFilters.js
+            │   └── HybridList.js
+            └── screens/
+                └── HybridScreen.js
 ```
 
 ## Redux 核心概念（结合本项目）
@@ -46,12 +61,6 @@ rn-redux-demo/
 - `useSelector`：从 store 中读取 state
 - `useDispatch`：触发 action，让 reducer 更新 state
 
-### 5) 异步 thunk（处理异步逻辑）
-- 文件：`src/features/counter/counterSlice.js`
-- `createAsyncThunk` 会自动生成 `pending / fulfilled / rejected` 三种 action
-- 在 `extraReducers` 中根据不同状态更新 `status`/`error`
-- 组件里通过 `dispatch(incrementAsync(amount))` 触发异步流程
-
 ## TanStack Query 入门（本项目）
 
 ### 1) QueryClient（全局缓存与请求管理器）
@@ -71,6 +80,16 @@ rn-redux-demo/
 ### 4) 模拟接口（fake API）
 - 文件：`src/features/query/fakeApi.js`
 - 用 `setTimeout` 模拟网络延迟 + 服务器状态
+
+## Redux + TanStack Query 组合示例（本项目）
+- 页面入口：`src/features/hybrid/screens/HybridScreen.js`
+- Redux 负责管理筛选条件（关键字、分类、排序）
+- TanStack Query 根据筛选条件去拉取/缓存服务端数据
+- 相关拆分：
+  - API：`src/features/hybrid/api.js`
+  - Hook：`src/features/hybrid/hooks/useHybridItems.js`
+  - 组件：`src/features/hybrid/components/HybridFilters.js`
+  - 组件：`src/features/hybrid/components/HybridList.js`
 
 ## 数据流（最重要的一张图）
 
@@ -110,5 +129,5 @@ slice 包含 reducer。slice 是“模块”，reducer 是“规则”。
 
 ## 下一步可以做什么
 - 增加第二个 slice（如 todos），学习多模块状态管理
-- 加入异步 thunk，理解 Redux 处理异步的方式
+- 深入 TanStack Query 的分页/失效重取等能力
 - 组合 React Navigation 学习多页面状态共享
