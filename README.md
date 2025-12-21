@@ -52,6 +52,26 @@ rn-redux-demo/
 - 在 `extraReducers` 中根据不同状态更新 `status`/`error`
 - 组件里通过 `dispatch(incrementAsync(amount))` 触发异步流程
 
+## TanStack Query 入门（本项目）
+
+### 1) QueryClient（全局缓存与请求管理器）
+- 文件：`src/query/queryClient.js`
+- 作用：统一管理缓存、请求状态、重试策略等
+
+### 2) useQuery（读取服务端数据）
+- 文件：`src/features/query/QueryDemo.js`
+- `useQuery` 会自动管理 `loading/error/data` 并缓存结果
+- 通过 `queryKey` 作为缓存标识
+
+### 3) useMutation（写操作 + 更新缓存）
+- 文件：`src/features/query/QueryDemo.js`
+- `useMutation` 负责提交写操作（如新增/更新）
+- 成功后用 `queryClient.setQueryData` 更新缓存（或 `invalidateQueries` 重新拉取）
+
+### 4) 模拟接口（fake API）
+- 文件：`src/features/query/fakeApi.js`
+- 用 `setTimeout` 模拟网络延迟 + 服务器状态
+
 ## 数据流（最重要的一张图）
 
 ```text

@@ -2,6 +2,7 @@ import { StatusBar } from 'expo-status-bar';
 import { useState } from 'react';
 import {
   Pressable,
+  ScrollView,
   StyleSheet,
   Text,
   TextInput,
@@ -14,6 +15,7 @@ import {
   incrementAsync,
   incrementByAmount,
 } from './counterSlice';
+import QueryDemo from '../query/QueryDemo';
 
 export default function CounterScreen() {
   // useSelector 会订阅 store，state 改变时组件会自动重渲染
@@ -42,58 +44,68 @@ export default function CounterScreen() {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Redux Counter</Text>
-      <Text style={styles.value}>{value}</Text>
+    <ScrollView contentContainerStyle={styles.container}>
+      <View style={styles.section}>
+        <Text style={styles.title}>Redux Counter</Text>
+        <Text style={styles.value}>{value}</Text>
 
-      <View style={styles.row}>
-        {/* 直接派发 action：dispatch(actionCreator()) */}
-        <Pressable style={styles.button} onPress={() => dispatch(decrement())}>
-          <Text style={styles.buttonText}>-1</Text>
+        <View style={styles.row}>
+          {/* 直接派发 action：dispatch(actionCreator()) */}
+          <Pressable style={styles.button} onPress={() => dispatch(decrement())}>
+            <Text style={styles.buttonText}>-1</Text>
+          </Pressable>
+          <Pressable style={styles.button} onPress={() => dispatch(increment())}>
+            <Text style={styles.buttonText}>+1</Text>
+          </Pressable>
+        </View>
+
+        <View style={styles.row}>
+          {/* 输入值作为 payload 传给 action */}
+          <TextInput
+            value={amount}
+            onChangeText={setAmount}
+            keyboardType="numeric"
+            placeholder="Amount"
+            style={styles.input}
+          />
+          <Pressable style={styles.button} onPress={handleAddAmount}>
+            <Text style={styles.buttonText}>Add</Text>
+          </Pressable>
+        </View>
+
+        <Pressable style={styles.buttonOutline} onPress={handleAddAmountAsync}>
+          <Text style={styles.buttonOutlineText}>Async Add</Text>
         </Pressable>
-        <Pressable style={styles.button} onPress={() => dispatch(increment())}>
-          <Text style={styles.buttonText}>+1</Text>
-        </Pressable>
+
+        <Text style={styles.status}>
+          状态：{status === 'loading' ? '请求中...' : '就绪'}
+        </Text>
+        {error ? <Text style={styles.error}>错误：{error}</Text> : null}
+
+        <Text style={styles.caption}>
+          Actions update state in the store, and the UI re-renders automatically.
+        </Text>
       </View>
 
-      <View style={styles.row}>
-        {/* 输入值作为 payload 传给 action */}
-        <TextInput
-          value={amount}
-          onChangeText={setAmount}
-          keyboardType="numeric"
-          placeholder="Amount"
-          style={styles.input}
-        />
-        <Pressable style={styles.button} onPress={handleAddAmount}>
-          <Text style={styles.buttonText}>Add</Text>
-        </Pressable>
-      </View>
-
-      <Pressable style={styles.buttonOutline} onPress={handleAddAmountAsync}>
-        <Text style={styles.buttonOutlineText}>Async Add</Text>
-      </Pressable>
-
-      <Text style={styles.status}>
-        状态：{status === 'loading' ? '请求中...' : '就绪'}
-      </Text>
-      {error ? <Text style={styles.error}>错误：{error}</Text> : null}
-
-      <Text style={styles.caption}>
-        Actions update state in the store, and the UI re-renders automatically.
-      </Text>
+      <View style={styles.divider} />
+      <QueryDemo />
       <StatusBar style="auto" />
-    </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flexGrow: 1,
     backgroundColor: '#f4f1ea',
     alignItems: 'center',
-    justifyContent: 'center',
     padding: 24,
+    paddingTop: 48,
+    paddingBottom: 40,
+  },
+  section: {
+    width: '100%',
+    alignItems: 'center',
   },
   title: {
     fontSize: 28,
@@ -153,6 +165,12 @@ const styles = StyleSheet.create({
   error: {
     color: '#c0392b',
     marginBottom: 8,
+  },
+  divider: {
+    height: 1,
+    width: '100%',
+    backgroundColor: '#e6e0d6',
+    marginVertical: 24,
   },
   caption: {
     marginTop: 16,
