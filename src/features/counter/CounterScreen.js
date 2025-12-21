@@ -8,11 +8,16 @@ import {
   View,
 } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
-import { decrement, increment, incrementByAmount } from './counterSlice';
+import {
+  decrement,
+  increment,
+  incrementAsync,
+  incrementByAmount,
+} from './counterSlice';
 
 export default function CounterScreen() {
   // useSelector 会订阅 store，state 改变时组件会自动重渲染
-  const value = useSelector((state) => state.counter.value);
+  const { value, status, error } = useSelector((state) => state.counter);
   const dispatch = useDispatch();
   const [amount, setAmount] = useState('5');
 
@@ -24,6 +29,16 @@ export default function CounterScreen() {
 
     // dispatch 触发 action，最终由 reducer 改变 state
     dispatch(incrementByAmount(parsed));
+  };
+
+  const handleAddAmountAsync = () => {
+    const parsed = Number(amount);
+    if (!Number.isFinite(parsed)) {
+      return;
+    }
+
+    // dispatch 一个 thunk：会先触发 pending，再触发 fulfilled/rejected
+    dispatch(incrementAsync(parsed));
   };
 
   return (
@@ -54,6 +69,15 @@ export default function CounterScreen() {
           <Text style={styles.buttonText}>Add</Text>
         </Pressable>
       </View>
+
+      <Pressable style={styles.buttonOutline} onPress={handleAddAmountAsync}>
+        <Text style={styles.buttonOutlineText}>Async Add</Text>
+      </Pressable>
+
+      <Text style={styles.status}>
+        状态：{status === 'loading' ? '请求中...' : '就绪'}
+      </Text>
+      {error ? <Text style={styles.error}>错误：{error}</Text> : null}
 
       <Text style={styles.caption}>
         Actions update state in the store, and the UI re-renders automatically.
@@ -108,6 +132,27 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 8,
     minWidth: 120,
+  },
+  buttonOutline: {
+    borderWidth: 1,
+    borderColor: '#2f5cff',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 12,
+    marginBottom: 12,
+  },
+  buttonOutlineText: {
+    color: '#2f5cff',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  status: {
+    color: '#5b5b5b',
+    marginBottom: 4,
+  },
+  error: {
+    color: '#c0392b',
+    marginBottom: 8,
   },
   caption: {
     marginTop: 16,

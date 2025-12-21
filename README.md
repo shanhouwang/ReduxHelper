@@ -46,6 +46,12 @@ rn-redux-demo/
 - `useSelector`：从 store 中读取 state
 - `useDispatch`：触发 action，让 reducer 更新 state
 
+### 5) 异步 thunk（处理异步逻辑）
+- 文件：`src/features/counter/counterSlice.js`
+- `createAsyncThunk` 会自动生成 `pending / fulfilled / rejected` 三种 action
+- 在 `extraReducers` 中根据不同状态更新 `status`/`error`
+- 组件里通过 `dispatch(incrementAsync(amount))` 触发异步流程
+
 ## 数据流（最重要的一张图）
 
 ```text
