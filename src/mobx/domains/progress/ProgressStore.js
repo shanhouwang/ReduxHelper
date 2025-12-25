@@ -1,7 +1,9 @@
 import { makeAutoObservable, runInAction } from 'mobx';
 
-// MobX Store：集中管理“学习进度”的状态与动作
+// ProgressStore：管理“学习进度”的状态与动作
 export class ProgressStore {
+  rootStore;
+
   // 可观察状态：任何变化都会驱动 UI 自动更新
   progress = 0; // 0 - 100
   topic = 'MobX 入门';
@@ -10,10 +12,11 @@ export class ProgressStore {
   // 非响应式字段：只用于保存定时器引用
   timer = null;
 
-  constructor() {
-    // makeAutoObservable 会自动把字段变成 observable，把方法变成 action
-    // timer 是临时变量，不需要响应式追踪
-    makeAutoObservable(this, { timer: false });
+  constructor(rootStore) {
+    this.rootStore = rootStore;
+
+    // rootStore 与 timer 不需要被响应式追踪
+    makeAutoObservable(this, { rootStore: false, timer: false });
   }
 
   // 计算属性：由已有 state 推导出来的“进度状态”
@@ -81,9 +84,3 @@ export class ProgressStore {
     }
   }
 }
-
-const storeKey = '__MOBX_PROGRESS_STORE__';
-
-// 单例导出：HMR/热重载也不会重复创建实例
-export const progressStore =
-  globalThis[storeKey] ?? (globalThis[storeKey] = new ProgressStore());

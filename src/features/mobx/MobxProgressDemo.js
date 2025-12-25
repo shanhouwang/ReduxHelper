@@ -1,83 +1,155 @@
 import { observer } from 'mobx-react-lite';
-import { useEffect } from 'react';
+import { memo, useCallback, useEffect, useMemo } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
-import { progressStore } from './progressStore';
+import { useProgressStore } from '../../mobx';
 
-// observer：让组件订阅 MobX store，store 变化时自动更新 UI
-const MobxProgressDemo = observer(() => {
+const useStopOnUnmount = () => {
+  const progressStore = useProgressStore();
+
   // 组件卸载时停止定时器，避免后台继续更新
-  useEffect(() => {
-    return () => progressStore.stop();
-  }, []);
+  useEffect(() => () => progressStore.stop(), [progressStore]);
+};
+
+const SectionTitle = memo(() => (
+  <Text style={styles.title}>MobX 学习进度 Demo</Text>
+));
+
+const Caption = memo(() => (
+  <Text style={styles.caption}>
+    MobX 的核心：state 变化 =&gt; UI 自动更新，无需手写订阅逻辑。
+  </Text>
+));
+
+const InfoRow = memo(({ label, value }) => (
+  <View style={styles.infoRow}>
+    <Text style={styles.label}>{label}</Text>
+    <Text style={styles.value}>{value}</Text>
+  </View>
+));
+
+// observer 只包裹真正依赖 store 的小组件，减少不必要的重渲染
+const TopicInput = observer(() => {
+  const progressStore = useProgressStore();
+
+  // useCallback 保证函数引用稳定，避免子组件重复渲染
+  const handleChange = useCallback(
+    (text) => progressStore.setTopic(text),
+    [progressStore]
+  );
 
   return (
-    <View style={styles.section}>
-      <Text style={styles.title}>MobX 学习进度 Demo</Text>
+    <TextInput
+      value={progressStore.topic}
+      onChangeText={handleChange}
+      placeholder="输入学习主题"
+      style={styles.input}
+    />
+  );
+});
 
-      {/* 输入学习主题：直接修改 store 状态 */}
-      <TextInput
-        value={progressStore.topic}
-        onChangeText={(text) => progressStore.setTopic(text)}
-        placeholder="输入学习主题"
-        style={styles.input}
-      />
+// 只要 progress/topic/status 变了，这个区域才会更新
+const ProgressSummary = observer(() => {
+  const progressStore = useProgressStore();
 
-      <View style={styles.infoRow}>
-        <Text style={styles.label}>主题：</Text>
-        <Text style={styles.value}>{progressStore.topic}</Text>
-      </View>
-      <View style={styles.infoRow}>
-        <Text style={styles.label}>进度：</Text>
-        <Text style={styles.value}>{progressStore.progress}%</Text>
-      </View>
-      <View style={styles.infoRow}>
-        <Text style={styles.label}>状态：</Text>
-        <Text style={styles.value}>{progressStore.statusText}</Text>
-      </View>
-      <View style={styles.infoRow}>
-        <Text style={styles.label}>阶段：</Text>
-        <Text style={styles.value}>{progressStore.stageText}</Text>
-      </View>
+  // 用 useMemo 缓存字符串拼接，避免每次渲染都重新计算
+  const progressText = useMemo(
+    () => `${progressStore.progress}%`,
+    [progressStore.progress]
+  );
 
-      {/* 简单进度条：宽度由 progress 决定 */}
-      <View style={styles.progressTrack}>
-        <View
-          style={[
-            styles.progressBar,
-            { width: `${progressStore.progress}%` },
-          ]}
-        />
-      </View>
-
-      <View style={styles.row}>
-        <Pressable style={styles.button} onPress={() => progressStore.decrease()}>
-          <Text style={styles.buttonText}>-10%</Text>
-        </Pressable>
-        <Pressable style={styles.button} onPress={() => progressStore.increase()}>
-          <Text style={styles.buttonText}>+10%</Text>
-        </Pressable>
-      </View>
-
-      <View style={styles.row}>
-        <Pressable style={styles.button} onPress={() => progressStore.startAuto()}>
-          <Text style={styles.buttonText}>开始自动</Text>
-        </Pressable>
-        <Pressable style={styles.button} onPress={() => progressStore.stop()}>
-          <Text style={styles.buttonText}>暂停</Text>
-        </Pressable>
-        <Pressable style={styles.button} onPress={() => progressStore.reset()}>
-          <Text style={styles.buttonText}>重置</Text>
-        </Pressable>
-      </View>
-
-      <Text style={styles.caption}>
-        MobX 的核心：state 变化 =&gt; UI 自动更新，无需手写订阅逻辑。
-      </Text>
+  return (
+    <View>
+      <InfoRow label="主题：" value={progressStore.topic} />
+      <InfoRow label="进度：" value={progressText} />
+      <InfoRow label="状态：" value={progressStore.statusText} />
+      <InfoRow label="阶段：" value={progressStore.stageText} />
     </View>
   );
 });
 
-export default MobxProgressDemo;
+// 进度条单独观察 progress，变化更精准
+const ProgressBar = observer(() => {
+  const progressStore = useProgressStore();
+
+  // 用 useMemo 生成样式数组，避免每次渲染都创建新对象
+  const barStyle = useMemo(
+    () => [styles.progressBar, { width: `${progressStore.progress}%` }],
+    [progressStore.progress]
+  );
+
+  return (
+    <View style={styles.progressTrack}>
+      <View style={barStyle} />
+    </View>
+  );
+});
+
+// 常用加减按钮独立出来，只关心调用动作
+const QuickActions = observer(() => {
+  const progressStore = useProgressStore();
+  const handleDecrease = useCallback(
+    () => progressStore.decrease(),
+    [progressStore]
+  );
+  const handleIncrease = useCallback(
+    () => progressStore.increase(),
+    [progressStore]
+  );
+
+  return (
+    <View style={styles.row}>
+      <Pressable style={styles.button} onPress={handleDecrease}>
+        <Text style={styles.buttonText}>-10%</Text>
+      </Pressable>
+      <Pressable style={styles.button} onPress={handleIncrease}>
+        <Text style={styles.buttonText}>+10%</Text>
+      </Pressable>
+    </View>
+  );
+});
+
+// 自动进度控制区：开始/暂停/重置
+const AutoActions = observer(() => {
+  const progressStore = useProgressStore();
+  const handleStart = useCallback(
+    () => progressStore.startAuto(),
+    [progressStore]
+  );
+  const handleStop = useCallback(() => progressStore.stop(), [progressStore]);
+  const handleReset = useCallback(() => progressStore.reset(), [progressStore]);
+
+  return (
+    <View style={styles.row}>
+      <Pressable style={styles.button} onPress={handleStart}>
+        <Text style={styles.buttonText}>开始自动</Text>
+      </Pressable>
+      <Pressable style={styles.button} onPress={handleStop}>
+        <Text style={styles.buttonText}>暂停</Text>
+      </Pressable>
+      <Pressable style={styles.button} onPress={handleReset}>
+        <Text style={styles.buttonText}>重置</Text>
+      </Pressable>
+    </View>
+  );
+});
+
+export default function MobxProgressDemo() {
+  // 用自定义 Hook 处理组件卸载逻辑，更清晰
+  useStopOnUnmount();
+
+  return (
+    <View style={styles.section}>
+      {/* 纯展示组件用 memo，避免无关状态引起重渲染 */}
+      <SectionTitle />
+      <TopicInput />
+      <ProgressSummary />
+      <ProgressBar />
+      <QuickActions />
+      <AutoActions />
+      <Caption />
+    </View>
+  );
+}
 
 const styles = StyleSheet.create({
   section: {

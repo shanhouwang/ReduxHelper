@@ -63,12 +63,23 @@ rn-redux-demo/
 
 ## MobX 入门（本项目新增）
 
-### 1) Store（学习进度状态）
-- 文件：`src/features/mobx/progressStore.js`
+### 1) RootStore（大型项目结构）
+- 文件：`src/mobx/rootStore.js`
+- 作用：聚合各个领域 store（auth/progress），统一管理依赖关系
+- 关键点：提供 `createRootStore` 方便测试，默认导出 `rootStore` 单例
+
+### 2) 领域 Store（学习进度）
+- 文件：`src/mobx/domains/progress/ProgressStore.js`
 - 作用：用可观察状态（progress/topic）+ 动作（increase/startAuto）管理学习进度
 - 关键点：`makeAutoObservable` 自动完成 observable/action/computed 的配置
 
-### 2) 组件与 observer
+### 3) Provider + Hook
+- 文件：`src/mobx/context/RootStoreContext.js`
+- 作用：通过 Context 注入 RootStore，适合大型项目
+- 文件：`src/mobx/domains/progress/useProgressStore.js`
+- 作用：领域专用 Hook，组件直接获取 `progressStore`
+
+### 4) 组件与 observer
 - 文件：`src/features/mobx/MobxProgressDemo.js`
 - 作用：`observer` 让组件订阅 store 变化，state 改变时 UI 自动更新
 - 在 `CounterScreen` 中插入 demo：`src/features/counter/CounterScreen.js`

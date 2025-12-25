@@ -1,14 +1,16 @@
 import { makeAutoObservable } from 'mobx';
 
-// AuthStore：全局登录状态示例（单例）
+// AuthStore：全局登录状态示例
 export class AuthStore {
+  rootStore;
   user = null; // 用户信息
   token = null; // 登录 token
   status = 'idle'; // idle | loading | error
   error = null;
 
-  constructor() {
-    makeAutoObservable(this);
+  constructor(rootStore) {
+    this.rootStore = rootStore;
+    makeAutoObservable(this, { rootStore: false });
   }
 
   // 是否已登录
@@ -41,9 +43,3 @@ export class AuthStore {
     this.error = null;
   }
 }
-
-const storeKey = '__MOBX_AUTH_STORE__';
-
-// 单例导出：HMR/热重载也不会重复创建实例
-export const authStore =
-  globalThis[storeKey] ?? (globalThis[storeKey] = new AuthStore());
