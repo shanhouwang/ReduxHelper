@@ -12,6 +12,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { decrement, increment, incrementByAmount } from './counterSlice';
 import QueryDemo from '../query/QueryDemo';
 import HybridScreen from '../hybrid/screens/HybridScreen';
+import MobxProgressDemo from '../mobx/MobxProgressDemo';
+import ZustandProgressDemo from '../zustand/ZustandProgressDemo';
 
 export default function CounterScreen() {
   // useSelector 会订阅 store，state 改变时组件会自动重渲染
@@ -64,6 +66,10 @@ export default function CounterScreen() {
         </Text>
       </View>
 
+      <View style={styles.divider} />
+      <MobxProgressDemo />
+      <View style={styles.divider} />
+      <ZustandProgressDemo />
       <View style={styles.divider} />
       <QueryDemo />
       <View style={styles.divider} />

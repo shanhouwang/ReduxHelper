@@ -61,6 +61,30 @@ rn-redux-demo/
 - `useSelector`：从 store 中读取 state
 - `useDispatch`：触发 action，让 reducer 更新 state
 
+## MobX 入门（本项目新增）
+
+### 1) Store（学习进度状态）
+- 文件：`src/features/mobx/progressStore.js`
+- 作用：用可观察状态（progress/topic）+ 动作（increase/startAuto）管理学习进度
+- 关键点：`makeAutoObservable` 自动完成 observable/action/computed 的配置
+
+### 2) 组件与 observer
+- 文件：`src/features/mobx/MobxProgressDemo.js`
+- 作用：`observer` 让组件订阅 store 变化，state 改变时 UI 自动更新
+- 在 `CounterScreen` 中插入 demo：`src/features/counter/CounterScreen.js`
+
+## Zustand 入门（本项目新增）
+
+### 1) Store（学习进度状态）
+- 文件：`src/features/zustand/progressStore.js`
+- 作用：用 `create` 创建一个全局 store hook，包含状态 + 动作
+- 关键点：通过 `set/get` 更新与读取；定时器放在闭包中更安全
+
+### 2) 组件直连 store
+- 文件：`src/features/zustand/ZustandProgressDemo.js`
+- 作用：组件直接调用 `useProgressStore` 读取状态与动作
+- 在 `CounterScreen` 中插入 demo：`src/features/counter/CounterScreen.js`
+
 ## TanStack Query 入门（本项目）
 
 ### 1) QueryClient（全局缓存与请求管理器）
