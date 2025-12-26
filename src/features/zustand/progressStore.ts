@@ -2,15 +2,27 @@ import { create } from 'zustand';
 
 // Zustand Store：用最少样板代码管理“学习进度”
 // 说明：timer 不需要触发 UI 更新，所以放在闭包变量中
-let timer = null;
+let timer: ReturnType<typeof setInterval> | null = null;
 
-export const useProgressStore = create((set, get) => ({
+type ProgressState = {
+  progress: number;
+  topic: string;
+  isRunning: boolean;
+  setTopic: (value: string) => void;
+  increase: (step?: number) => void;
+  decrease: (step?: number) => void;
+  reset: () => void;
+  startAuto: () => void;
+  stop: () => void;
+};
+
+export const useProgressStore = create<ProgressState>((set, get) => ({
   // 可更新的状态
   progress: 0, // 0 - 100
   topic: 'Zustand 入门',
   isRunning: false,
 
-  setTopic: (value) => set({ topic: value }),
+  setTopic: (value: string) => set({ topic: value }),
 
   increase: (step = 10) =>
     set((state) => ({ progress: Math.min(100, state.progress + step) })),

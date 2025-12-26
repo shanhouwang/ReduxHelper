@@ -1,7 +1,7 @@
 {
   "name": "rn-redux-demo",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "index.ts",
   "scripts": {
     "start": "expo start",
     "android": "expo start --android",
@@ -19,6 +19,10 @@
     "react-native": "0.81.5",
     "react-redux": "^9.2.0",
     "zustand": "^5.0.8"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.0",
+    "typescript": "^5.9.2"
   },
   "private": true
 }

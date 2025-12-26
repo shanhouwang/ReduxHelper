@@ -1,7 +1,18 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+import type { HybridItem } from '../types';
 
 // 纯列表组件：只渲染数据，不关心 Redux/Query
-export default function HybridList({ items, onToggleLike, isBusy }) {
+type HybridListProps = {
+  items: HybridItem[];
+  onToggleLike: (id: string) => void;
+  isBusy: boolean;
+};
+
+export default function HybridList({
+  items,
+  onToggleLike,
+  isBusy,
+}: HybridListProps) {
   return (
     <View style={styles.list}>
       {items.map((item) => (

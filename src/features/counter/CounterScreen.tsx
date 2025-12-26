@@ -8,17 +8,17 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import { useDispatch, useSelector } from 'react-redux';
 import { decrement, increment, incrementByAmount } from './counterSlice';
 import QueryDemo from '../query/QueryDemo';
 import HybridScreen from '../hybrid/screens/HybridScreen';
 import MobxProgressDemo from '../mobx/MobxProgressDemo';
 import ZustandProgressDemo from '../zustand/ZustandProgressDemo';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
 
 export default function CounterScreen() {
   // useSelector 会订阅 store，state 改变时组件会自动重渲染
-  const value = useSelector((state) => state.counter.value);
-  const dispatch = useDispatch();
+  const value = useAppSelector((state) => state.counter.value);
+  const dispatch = useAppDispatch();
   const [amount, setAmount] = useState('5');
 
   const handleAddAmount = () => {

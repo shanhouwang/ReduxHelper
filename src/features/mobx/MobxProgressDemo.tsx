@@ -20,7 +20,12 @@ const Caption = memo(() => (
   </Text>
 ));
 
-const InfoRow = memo(({ label, value }) => (
+type InfoRowProps = {
+  label: string;
+  value: string;
+};
+
+const InfoRow = memo(({ label, value }: InfoRowProps) => (
   <View style={styles.infoRow}>
     <Text style={styles.label}>{label}</Text>
     <Text style={styles.value}>{value}</Text>
@@ -33,7 +38,7 @@ const TopicInput = observer(() => {
 
   // useCallback 保证函数引用稳定，避免子组件重复渲染
   const handleChange = useCallback(
-    (text) => progressStore.setTopic(text),
+    (text: string) => progressStore.setTopic(text),
     [progressStore]
   );
 

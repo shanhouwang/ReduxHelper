@@ -1,12 +1,23 @@
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import type { HybridCategory, HybridSortBy } from '../types';
 
-const categories = ['all', 'redux', 'query', 'mix'];
-const sortOptions = [
+const categories: HybridCategory[] = ['all', 'redux', 'query', 'mix'];
+const sortOptions: Array<{ key: HybridSortBy; label: string }> = [
   { key: 'points', label: '按积分' },
   { key: 'title', label: '按标题' },
 ];
 
 // 纯展示组件：只渲染 UI，通过 props 把事件抛给上层
+type HybridFiltersProps = {
+  keyword: string;
+  onKeywordChange: (value: string) => void;
+  category: HybridCategory;
+  onCategoryChange: (value: HybridCategory) => void;
+  sortBy: HybridSortBy;
+  onSortByChange: (value: HybridSortBy) => void;
+  onReset: () => void;
+};
+
 export default function HybridFilters({
   keyword,
   onKeywordChange,
@@ -15,7 +26,7 @@ export default function HybridFilters({
   sortBy,
   onSortByChange,
   onReset,
-}) {
+}: HybridFiltersProps) {
   return (
     <View style={styles.container}>
       {/* 关键字输入由 Redux 存储，但更新逻辑交给上层 */}

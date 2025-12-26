@@ -1,14 +1,22 @@
 import { makeAutoObservable } from 'mobx';
+import type { RootStore } from '../../rootStore';
 
 // AuthStore：全局登录状态示例
-export class AuthStore {
-  rootStore;
-  user = null; // 用户信息
-  token = null; // 登录 token
-  status = 'idle'; // idle | loading | error
-  error = null;
+type AuthUser = {
+  id: string;
+  name: string;
+};
 
-  constructor(rootStore) {
+type AuthStatus = 'idle' | 'loading' | 'error';
+
+export class AuthStore {
+  rootStore: RootStore;
+  user: AuthUser | null = null; // 用户信息
+  token: string | null = null; // 登录 token
+  status: AuthStatus = 'idle'; // idle | loading | error
+  error: string | null = null;
+
+  constructor(rootStore: RootStore) {
     this.rootStore = rootStore;
     makeAutoObservable(this, { rootStore: false });
   }
@@ -18,15 +26,15 @@ export class AuthStore {
     return Boolean(this.token);
   }
 
-  setUser(user) {
+  setUser(user: AuthUser | null) {
     this.user = user;
   }
 
-  setToken(token) {
+  setToken(token: string | null) {
     this.token = token;
   }
 
-  setError(message) {
+  setError(message: string) {
     this.error = message;
     this.status = 'error';
   }

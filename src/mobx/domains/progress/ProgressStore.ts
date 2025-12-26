@@ -1,8 +1,9 @@
 import { makeAutoObservable, runInAction } from 'mobx';
+import type { RootStore } from '../../rootStore';
 
 // ProgressStore：管理“学习进度”的状态与动作
 export class ProgressStore {
-  rootStore;
+  rootStore: RootStore;
 
   // 可观察状态：任何变化都会驱动 UI 自动更新
   progress = 0; // 0 - 100
@@ -10,9 +11,9 @@ export class ProgressStore {
   isRunning = false;
 
   // 非响应式字段：只用于保存定时器引用
-  timer = null;
+  timer: ReturnType<typeof setInterval> | null = null;
 
-  constructor(rootStore) {
+  constructor(rootStore: RootStore) {
     this.rootStore = rootStore;
 
     // rootStore 与 timer 不需要被响应式追踪
@@ -36,7 +37,7 @@ export class ProgressStore {
     return '准备阶段';
   }
 
-  setTopic(value) {
+  setTopic(value: string) {
     this.topic = value;
   }
 

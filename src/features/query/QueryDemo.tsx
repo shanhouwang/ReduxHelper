@@ -1,18 +1,18 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { addPoints, fetchProfile } from './fakeApi';
+import { addPoints, fetchProfile, type Profile } from './fakeApi';
 
 export default function QueryDemo() {
   const queryClient = useQueryClient();
 
   // useQuery 会自动管理 loading/error/data，并缓存结果
-  const profileQuery = useQuery({
+  const profileQuery = useQuery<Profile, Error>({
     queryKey: ['profile'],
     queryFn: fetchProfile,
   });
 
   // useMutation 负责“写操作”，成功后手动更新缓存
-  const addPointsMutation = useMutation({
+  const addPointsMutation = useMutation<Profile, Error>({
     mutationFn: () => addPoints(5),
     onSuccess: (data) => {
       // 直接把最新数据写进缓存，界面会立即更新

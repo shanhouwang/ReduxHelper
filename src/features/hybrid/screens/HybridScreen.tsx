@@ -1,14 +1,14 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { useDispatch, useSelector } from 'react-redux';
 import HybridFilters from '../components/HybridFilters';
 import HybridList from '../components/HybridList';
 import { useHybridItems } from '../hooks/useHybridItems';
 import { resetFilters, setCategory, setKeyword, setSortBy } from '../hybridSlice';
+import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 
 export default function HybridScreen() {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   // Redux 管理“页面状态”（筛选条件）
-  const { keyword, category, sortBy } = useSelector((state) => state.hybrid);
+  const { keyword, category, sortBy } = useAppSelector((state) => state.hybrid);
 
   // Query Hook 负责“服务端数据”
   const {
